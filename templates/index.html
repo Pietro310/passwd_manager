@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar bg-primary" data-bs-theme="light">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white"><i class="bi bi-shield-lock-fill"></i><b> Password Manager</b></a>
+            <form class="d-flex" role="search" onsubmit="event.preventDefault();">
+                <input class="form-control me-2" type="search" id="searchInput" placeholder="Search" aria-label="Search"
+                    onkeyup="searchTable()" />
+            </form>
+        </div>
+    </nav>
+
+    <div class="container-md mt-4">
+        <div>
+            <button class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addModal"><i
+                    class="bi bi-plus-lg"></i></button>
+        </div>
+
+        <!-- Add Password Modal -->
+        <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModalLabel">Add New Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addForm">
+                            <div class="mb-2"><input type="email" class="form-control" id="addEmail" placeholder="Email"
+                                    required></div>
+                            <div class="mb-2"><input type="text" class="form-control" id="addUsername"
+                                    placeholder="Username" required></div>
+                            <div class="mb-2"><input type="text" class="form-control" id="addPassword"
+                                    placeholder="Password" required></div>
+                            <div class="mb-2"><textarea class="form-control" id="addNote" placeholder="Note"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="addPassword()">Save Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Password Modal -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm">
+                            <input type="hidden" id="editId">
+                            <div class="mb-2"><input type="email" class="form-control" id="editEmail"
+                                    placeholder="Email" required></div>
+                            <div class="mb-2"><input type="text" class="form-control" id="editUsername"
+                                    placeholder="Username" required></div>
+                            <div class="mb-2"><input type="text" class="form-control" id="editPassword"
+                                    placeholder="Password" required></div>
+                            <div class="mb-2"><textarea class="form-control" id="editNote"
+                                    placeholder="Note"></textarea></div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="updatePassword()">Update
+                            Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Conferma eliminazione</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Sei sicuro di voler eliminare questa password?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn"
+                            onclick="confirmDelete()">Elimina</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <!--<th>ID</th>-->
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Note</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <!--<td>{{ row["id"] }}</td>-->
+                        <td>
+                            <span>{{ row["email"] }}</span>
+                            <button class="btn btn-link btn-sm p-0 ms-1" title="Copia" onclick="copyToClipboard(this, this.previousElementSibling.textContent)"><i class="bi bi-copy"></i></button>
+                        </td>
+                        <td>
+                            <span>{{ row["username"] }}</span>
+                            <button class="btn btn-link btn-sm p-0 ms-1" title="Copia" onclick="copyToClipboard(this, this.previousElementSibling.textContent)"><i class="bi bi-copy"></i></button>
+                        </td>
+                        <td>
+                            <span>{{ row["passwd"] }}</span>
+                            <button class="btn btn-link btn-sm p-0 ms-1" title="Copia" onclick="copyToClipboard(this, this.previousElementSibling.textContent)"><i class="bi bi-copy"></i></button>
+                        </td>
+                        <td>{{ row["note"] }}</td>
+
+                        <td>
+                            <button class="btn btn-primary btn-sm" data-id="{{ row['id'] }}"
+                                data-email="{{ row['email'] }}" data-username="{{ row['username'] }}"
+                                data-passwd="{{ row['passwd'] }}" data-note="{{ row['note'] }}"
+                                onclick="openEditModal(this.dataset.id, this.dataset.email, this.dataset.username, this.dataset.passwd, this.dataset.note)"><i
+                                    class="bi bi-pen-fill"></i></button>
+                            <button class="btn btn-danger btn-sm" data-id="{{ row['id'] }}"
+                                onclick="deletePassword(this.dataset.id)"><i class="bi bi-trash-fill"></i></button>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
