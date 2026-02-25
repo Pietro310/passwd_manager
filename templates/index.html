@@ -8,6 +8,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        /* Ottimizzazioni per Mobile */
+        @media (max-width: 767px) {
+            .navbar .container-fluid {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .navbar .d-flex {
+                width: 100%;
+            }
+            /* Evita che il testo nella tabella vada a capo in modo disordinato su schermi piccoli */
+            .table th, .table td {
+                white-space: nowrap;
+            }
+            /* Rende la colonna 'Note' l'unica in grado di andare a capo per non espandere troppo in larghezza */
+            .table td:nth-child(4) {
+                white-space: normal;
+                min-width: 150px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -105,8 +127,8 @@
             </div>
         </div>
 
-        <div>
-            <table class="table">
+        <div class="table-responsive shadow-sm rounded-3">
+            <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
                         <!--<th>ID</th>-->

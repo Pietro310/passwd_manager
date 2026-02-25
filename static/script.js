@@ -1,11 +1,36 @@
 // Copia negli appunti
 function copyToClipboard(btn, text) {
-    navigator.clipboard.writeText(text.trim()).then(() => {
-        btn.innerHTML = '<i class="bi bi-check2"></i>';
-        setTimeout(() => {
-            btn.innerHTML = '<i class="bi bi-copy"></i>';
-        }, 1500);
-    }).catch(() => alert('Copia non riuscita'));
+    // L'API Clipboard moderna funziona solo in HTTPS o su localhost (contesti sicuri)
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text.trim()).then(() => {
+            showSuccessIcon(btn);
+        }).catch(() => alert('Copia non riuscita.'));
+    } else {
+        // Fallback per connessioni HTTP normali sul server
+        const textArea = document.createElement("textarea");
+        textArea.value = text.trim();
+        // Nascondi la text area
+        textArea.style.position = "absolute";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showSuccessIcon(btn);
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+            alert('Copia non riuscita. Il tuo browser blocca la copia in HTTP.');
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }
+}
+
+function showSuccessIcon(btn) {
+    btn.innerHTML = '<i class="bi bi-check2"></i>';
+    setTimeout(() => {
+        btn.innerHTML = '<i class="bi bi-copy"></i>';
+    }, 1500);
 }
 
 // Aggiunta di una nuova password
