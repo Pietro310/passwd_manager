@@ -144,3 +144,65 @@ function searchTable() {
         }
     }
 }
+
+// Generatore di password
+function generatePassword() {
+    const length = parseInt(document.getElementById('genLength').value);
+    const incUpper = document.getElementById('genUpper').checked;
+    const incLower = document.getElementById('genLower').checked;
+    const incNumbers = document.getElementById('genNumbers').checked;
+    const incSymbols = document.getElementById('genSymbols').checked;
+
+    const upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowerChars = "abcdefghijklmnopqrstuvwxyz";
+    const numberChars = "0123456789";
+    const symbolChars = "!@#$%^&*-=_+/?";
+
+    let allowedChars = "";
+    if (incUpper) allowedChars += upperChars;
+    if (incLower) allowedChars += lowerChars;
+    if (incNumbers) allowedChars += numberChars;
+    if (incSymbols) allowedChars += symbolChars;
+
+    if (allowedChars.length === 0) {
+        alert("Seleziona almeno un tipo di carattere!");
+        return;
+    }
+
+    let generatedPassword = "";
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * allowedChars.length);
+        generatedPassword += allowedChars[randomIndex];
+    }
+
+    document.getElementById('genPasswordOutput').value = generatedPassword;
+}
+
+// Copia la password generata
+function copyGeneratedPassword(btn) {
+    const passwordText = document.getElementById('genPasswordOutput').value;
+    if (!passwordText) return;
+
+    // Riutilizziamo la funzione di copia già esistente, ma passiamo il testo esplicito
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(passwordText).then(() => {
+            showSuccessIcon(btn.querySelector('i').parentElement); // Il bottone stesso
+        }).catch(() => alert('Copia non riuscita.'));
+    } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = passwordText;
+        textArea.style.position = "absolute";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showSuccessIcon(btn.querySelector('i').parentElement);
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+            alert('Copia non riuscita. Il tuo browser blocca la copia in HTTP.');
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }
+}
